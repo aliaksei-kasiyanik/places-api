@@ -63,7 +63,8 @@
  Исходя из соображений выше, нам лучше всего подходит AP система c eventual consistency, а для администраторского функционала нужны CP гарантии. 
  
 ### Технологии и построение архитектуры
-  Исходя из специфики данных, а также выше приведенных выкладок, касающихся CAP теоремы, хорошим решением будет использование документоориентированной системы управления базами данных AP типа с поддержкой CRDT и геопространственных данных. 
+   Сколько-нибудь глубоко проанализировать весь спектр существующих технологий в сфере распределенных баз данных не представляется возможным, поэтому рассмотрим ключевые моменты в наиболее популярных решениях.
+  Исходя из специфики данных, а также выше приведенных выкладок, касающихся CAP теоремы, хорошим решением будет использование документоориентированной (или key-value?) системы управления базами данных AP типа с поддержкой CRDT и геопространственных данных. 
   Рассмотрим варианты:
   
 1. Riak KV - AP  
@@ -88,12 +89,21 @@
   * Master-slave => availability?
   * Отсутствие CRDT
 
-3. Couchbase Server - CP
+3. Couchbase Server - CP in cluster - AP with several clusters
 
-4. Aerospike - AP or CP (depands on configuration)
+  Pros:
+  * Document-oriented 
+  * Geographic Distribution and Cross Data Center Replication (XDCR)
+  * CP if running as a single cluster - AP with XDCR with several clusters (eventual consistency)
+  
+  Cons:
+  * Some features are available only in enterprise version
+  
+### Архитектура
+  Так как такие системы как Couchbase и Riak являются достаточно сложными и на их изучение требуется большое количество времени, я решил остановиться на варианте с MongoDB и Go как backend-языком. 
+  В полном варианте (со всем функционалом) система на мой взгляд могла бы выглядеть следующим образом:
+ ![alt text](https://raw.githubusercontent.com/aliaksei-kasiyanik/places-api/master/PlaceAPI.png "Architecture Design")
+  
 
 
 
-
-
- 
