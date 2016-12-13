@@ -77,14 +77,16 @@
   * Требуется интеграция с Apache Solr для эффективной выборки данных
   * Нет поддержки геопространственных данных (возможно индексирование с помощью Solr, однако не знаю, насколько эффективно)
 
-2. MongoDB - CP
-Pros:
-* Документоориентированная база
-* Подержка geospatial indices
-* Мощный встроенные query-функционал
-Cons:
-* Master-slave => availability?
-* Отсутствие CRDT
+2. MongoDB - CP 
+
+  Pros:
+  * Документоориентированная база
+  * Подержка geospatial indices
+  * Мощный встроенные query-функционал
+  
+  Cons:  
+  * Master-slave => availability?
+  * Отсутствие CRDT
 
 3. Couchbase Server - CP
 
