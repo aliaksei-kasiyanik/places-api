@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
 
 	"github.com/aliaksei-kasiyanik/places-api/models"
 )
@@ -60,4 +60,3 @@ func CreatePlace(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-
