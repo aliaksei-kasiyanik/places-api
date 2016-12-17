@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"io"
+
+	"github.com/aliaksei-kasiyanik/places-api/models"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -15,9 +17,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPlaces(w http.ResponseWriter, r *http.Request) {
-	places := Places{
-		Place{Id: 1, Name: "Mir"},
-		Place{Id: 2, Name: "Niasvizh"},
+	places := models.Places{
+		models.Place{Id: 1, Name: "Mir"},
+		models.Place{Id: 2, Name: "Niasvizh"},
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -34,7 +36,7 @@ func GetPlaceById(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePlace(w http.ResponseWriter, r *http.Request) {
-	var place Place
+	var place models.Place
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		panic(err)
