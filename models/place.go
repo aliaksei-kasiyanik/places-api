@@ -5,8 +5,6 @@ import "gopkg.in/mgo.v2/bson"
 type (
 	Place struct {
 		Id   bson.ObjectId `json:"id" bson:"_id"`
-		Name string `json:"name"`
+		Name string        `json:"name"`
 	}
 )
-
-type Places []Place

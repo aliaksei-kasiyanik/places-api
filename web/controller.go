@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/aliaksei-kasiyanik/places-api/models"
-
 	"gopkg.in/mgo.v2/bson"
+
+	"github.com/aliaksei-kasiyanik/places-api/models"
 	"github.com/aliaksei-kasiyanik/places-api/repo"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/mgo.v2"
 
-	"github.com/aliaksei-kasiyanik/places-api/web"
 	"github.com/aliaksei-kasiyanik/places-api/repo"
+	"github.com/aliaksei-kasiyanik/places-api/web"
 )
 
 func main() {

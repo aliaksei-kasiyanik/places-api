@@ -3,6 +3,7 @@ package repo
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 	"github.com/aliaksei-kasiyanik/places-api/models"
 )
 
@@ -47,4 +48,3 @@ func (repo *PlacesRepo) FindPlaceById(oid *bson.ObjectId) (*models.Place, error)
 func (repo *PlacesRepo) RemovePlace(oid *bson.ObjectId) error {
 	return repo.collection.RemoveId(oid)
 }
-
