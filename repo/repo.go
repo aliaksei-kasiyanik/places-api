@@ -10,41 +10,53 @@ import (
 type (
 	PlacesRepo struct {
 		session    *mgo.Session
-		db         *mgo.Database
-		collection *mgo.Collection
 	}
 )
 
 func NewPlacesRepo(s *mgo.Session) *PlacesRepo {
-	repo := &PlacesRepo{}
-	repo.session = s
-	repo.db = s.DB("places-api")
-	repo.collection = s.DB("places-api").C("places")
-	return repo
+	return &PlacesRepo{s}
 }
 
 func (repo *PlacesRepo) InsertPlace(place *models.Place) (bson.ObjectId, error) {
+
 	place.Id = bson.NewObjectId()
 
+	session := repo.session.Copy()
+	defer session.Close()
+
 	// todo: several attempts
-	err := repo.collection.Insert(&place)
+	err := session.DB("places-api").C("places").Insert(&place)
 
 	return place.Id, err
 }
 
 func (repo *PlacesRepo) FindAllPlaces() (*[]models.Place, error) {
+
 	var result []models.Place
-	iter := repo.collection.Find(nil).Limit(100).Iter()
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	iter := session.DB("places-api").C("places").Find(nil).Limit(100).Iter()
 	err := iter.All(&result)
 	return &result, err
 }
 
 func (repo *PlacesRepo) FindPlaceById(oid *bson.ObjectId) (*models.Place, error) {
+
 	var result models.Place
-	err := repo.collection.Find(bson.M{"_id": oid}).One(&result)
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	err := session.DB("places-api").C("places").Find(bson.M{"_id": oid}).One(&result)
 	return &result, err
 }
 
 func (repo *PlacesRepo) RemovePlace(oid *bson.ObjectId) error {
-	return repo.collection.RemoveId(oid)
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	return session.DB("places-api").C("places").RemoveId(oid)
 }

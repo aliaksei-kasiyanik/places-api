@@ -30,3 +30,10 @@ https://awesome-go.com/
    https://github.com/julienschmidt/httprouter
    
    
+#### MongoDB
+
+1. Rich MongoDB driver for Go  
+   https://godoc.org/labix.org/v2/mgo
+
+2. Using MongoDB with the Go language  
+   http://spf13.com/presentation/MongoDB-and-Go/
