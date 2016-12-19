@@ -27,16 +27,16 @@ func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
 	return session.DB("places-api").C("places").Insert(&place)
 }
 
-func (repo *PlacesRepo) FindAllPlaces() (*[]models.Place, error) {
+func (repo *PlacesRepo) FindAllPlaces() (models.Places, error) {
 
-	var result []models.Place
+	var result models.Places
 
 	session := repo.session.Copy()
 	defer session.Close()
 
 	iter := session.DB("places-api").C("places").Find(nil).Limit(100).Iter()
 	err := iter.All(&result)
-	return &result, err
+	return result, err
 }
 
 func (repo *PlacesRepo) FindPlaceById(oid *bson.ObjectId) (*models.Place, error) {

@@ -19,13 +19,15 @@ type (
 		Image       string        `json:"image" bson:"img,omitempty"`
 	}
 
+	Places []*Place
+
 	PlaceMeta struct {
 		Self string `json:"self"`
 	}
 
 	PlaceWrapper struct {
 		Item *Place    `json:"item"`
-		Meta PlaceMeta `json:"_meta"`
+		Meta *PlaceMeta `json:"_meta"`
 	}
 
 	PlacesMeta struct {
@@ -35,7 +37,30 @@ type (
 	}
 
 	PlacesWrapper struct {
-		Items []PlacesWrapper `json:"items"`
-		Meta  PlacesMeta      `json:"_meta"`
+		Items []*PlaceWrapper `json:"items"`
+		Meta  *PlacesMeta      `json:"_meta"`
 	}
 )
+
+func (places Places) WrapPlaces(self string) *PlacesWrapper {
+
+	//l := len(places)
+	var items []*PlaceWrapper
+	for _, p := range places {
+		items = append(items, p.WrapPlace())
+	}
+	pw := &PlacesWrapper{
+		Items: items,
+		Meta: &PlacesMeta{Self: self},
+	}
+	//pw.Items = &items
+	//pw.Meta = &PlacesMeta{Self: self}
+	return pw
+}
+
+func (p *Place) WrapPlace() *PlaceWrapper {
+	return &PlaceWrapper{
+		Item: p,
+		Meta: &PlaceMeta{"/places/" + p.Id.Hex()},
+	}
+}
