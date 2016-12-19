@@ -12,8 +12,6 @@ func PlaceApiRouter(repo *repo.PlacesRepo) *httprouter.Router {
 
 	pc := NewPlacesController(repo)
 
-	router.GET("/", pc.Index)
-
 	router.GET("/places", pc.SearchPlaces)
 	router.POST("/places", pc.CreatePlace)
 

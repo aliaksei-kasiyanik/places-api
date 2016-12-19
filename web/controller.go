@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/aliaksei-kasiyanik/places-api/models"
@@ -22,83 +23,97 @@ func NewPlacesController(r *repo.PlacesRepo) *PlacesController {
 	return &PlacesController{r}
 }
 
-func (pc PlacesController) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprintln(w, "Welcome!")
-}
-
 func (pc PlacesController) SearchPlaces(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	places, err := pc.repo.FindAllPlaces()
+
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	if err := json.NewEncoder(w).Encode(places); err != nil {
-		panic(err)
-	}
+	ResponseOK(w, places)
 }
 
 func (pc PlacesController) GetPlaceById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
 
+	id := p.ByName("id")
 	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(http.StatusNotFound)
+		ErrorResponse(w, "id is corrupted", http.StatusBadRequest)
 		return
 	}
 
 	oid := bson.ObjectIdHex(id)
 	place, err := pc.repo.FindPlaceById(&oid)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
+		switch err {
+		default:
+			ErrorResponse(w, "Database error", http.StatusInternalServerError)
+			return
+		case mgo.ErrNotFound:
+			ErrorResponse(w, "Place not found", http.StatusNotFound)
+			return
+		}
 	}
 
-
-	placeJson, _ := json.Marshal(place)
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, "%s", placeJson)
+	ResponseOK(w, place)
 }
 
 func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
 	place := &models.Place{}
-
 	if err := json.NewDecoder(r.Body).Decode(place); err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		return
+		ErrorResponse(w, "Place entity is corrupted", http.StatusBadRequest)
 	}
 
-	oid, err := pc.repo.InsertPlace(place)
+	err := pc.repo.InsertPlace(place)
 	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(oid)
+	Response(w, place, http.StatusCreated)
 }
 
 func (pc PlacesController) RemovePlace(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
 
+	id := p.ByName("id")
 	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(http.StatusNotFound)
+		ErrorResponse(w, "id is corrupted", http.StatusBadRequest)
 		return
 	}
 
 	oid := bson.ObjectIdHex(id)
-
 	if err := pc.repo.RemovePlace(&oid); err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
+
+		switch err {
+		default:
+			ErrorResponse(w, "Database error", http.StatusInternalServerError)
+			return
+		case mgo.ErrNotFound:
+			ErrorResponse(w, "Place not found", http.StatusNotFound)
+			return
+		}
+
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func Response(w http.ResponseWriter, v interface{}, code int) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(code)
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		ErrorResponse(w, "JSON Encode Error", http.StatusInternalServerError)
+	}
+}
+
+func ResponseOK(w http.ResponseWriter, v interface{}) {
+	Response(w, v, http.StatusOK)
+}
+
+func ErrorResponse(w http.ResponseWriter, message string, code int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+	fmt.Fprintf(w, `{ "code": "%d", "message": %q}`, code, message)
 }

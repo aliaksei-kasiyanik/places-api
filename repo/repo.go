@@ -17,17 +17,14 @@ func NewPlacesRepo(s *mgo.Session) *PlacesRepo {
 	return &PlacesRepo{s}
 }
 
-func (repo *PlacesRepo) InsertPlace(place *models.Place) (bson.ObjectId, error) {
+func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
 
 	place.Id = bson.NewObjectId()
 
 	session := repo.session.Copy()
 	defer session.Close()
 
-	// todo: several attempts
-	err := session.DB("places-api").C("places").Insert(&place)
-
-	return place.Id, err
+	return session.DB("places-api").C("places").Insert(&place)
 }
 
 func (repo *PlacesRepo) FindAllPlaces() (*[]models.Place, error) {
@@ -54,6 +51,14 @@ func (repo *PlacesRepo) FindPlaceById(oid *bson.ObjectId) (*models.Place, error)
 }
 
 func (repo *PlacesRepo) RemovePlace(oid *bson.ObjectId) error {
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	return session.DB("places-api").C("places").RemoveId(oid)
+}
+
+func (repo *PlacesRepo) PlaceExist(oid *bson.ObjectId) error {
 
 	session := repo.session.Copy()
 	defer session.Close()

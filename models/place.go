@@ -11,7 +11,7 @@ type (
 	}
 
 	Place struct {
-		Id          bson.ObjectId `json:"id" bson:"_id"`
+		Id          bson.ObjectId `json:"-" bson:"_id"`
 		Location    GeoJson       `json:"location" bson:"loc"`
 		Name        string        `json:"name" bson:"name"`
 		Description string        `json:"description" bson:"desc,omitempty"`
