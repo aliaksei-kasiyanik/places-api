@@ -43,8 +43,6 @@ type (
 )
 
 func (places Places) WrapPlaces(self string) *PlacesWrapper {
-
-	//l := len(places)
 	var items []*PlaceWrapper
 	for _, p := range places {
 		items = append(items, p.WrapPlace())
@@ -53,8 +51,6 @@ func (places Places) WrapPlaces(self string) *PlacesWrapper {
 		Items: items,
 		Meta:  &PlacesMeta{Self: self},
 	}
-	//pw.Items = &items
-	//pw.Meta = &PlacesMeta{Self: self}
 	return pw
 }
 
