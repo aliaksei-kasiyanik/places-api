@@ -12,6 +12,12 @@ type (
 		Coordinates []float64 `json:"coordinates"`
 	}
 
+	BasePlace struct {
+		Id       bson.ObjectId `json:"-" bson:"_id"`
+		Location GeoJson       `json:"location" bson:"loc"`
+		Name     string        `json:"name" bson:"name"`
+	}
+
 	Place struct {
 		Id               bson.ObjectId `json:"-" bson:"_id"`
 		Location         GeoJson       `json:"location" bson:"loc"`
@@ -22,7 +28,7 @@ type (
 		LastModifiedTime time.Time     `json:"-" bson:"lastModified"`
 	}
 
-	Places []*Place
+	Places []*BasePlace
 
 	PlaceMeta struct {
 		Self string `json:"self"`
@@ -33,6 +39,11 @@ type (
 		Meta *PlaceMeta `json:"_meta"`
 	}
 
+	BasePlaceWrapper struct {
+		Item *BasePlace     `json:"item"`
+		Meta *PlaceMeta `json:"_meta"`
+	}
+
 	PlacesMeta struct {
 		Self string `json:"self"`
 		Next string `json:"next,omitempty"`
@@ -40,7 +51,7 @@ type (
 	}
 
 	PlacesWrapper struct {
-		Items []*PlaceWrapper `json:"items"`
+		Items []*BasePlaceWrapper `json:"items"`
 		Meta  *PlacesMeta     `json:"_meta"`
 	}
 )
@@ -57,7 +68,7 @@ func (*Places) Validate() error {
 
 func (places Places) Wrap(r *http.Request) *PlacesWrapper {
 	//var items []*PlaceWrapper
-	items := make([]*PlaceWrapper, 0)
+	items := make([]*BasePlaceWrapper, 0)
 	for _, p := range places {
 		items = append(items, p.wrapPlace())
 	}
@@ -75,8 +86,8 @@ func (p *Place) Wrap(r *http.Request) *PlaceWrapper {
 	}
 }
 
-func (p *Place) wrapPlace() *PlaceWrapper {
-	return &PlaceWrapper{
+func (p *BasePlace) wrapPlace() *BasePlaceWrapper {
+	return &BasePlaceWrapper{
 		Item: p,
 		Meta: &PlaceMeta{"/places/" + p.Id.Hex()},
 	}

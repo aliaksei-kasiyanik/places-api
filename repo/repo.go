@@ -60,7 +60,9 @@ func (repo *PlacesRepo) FindAllPlaces(sp *models.SearchParams) (models.Places, e
 	defer session.Close()
 
 	err := session.DB("places-api").C("places").
-		Find(nil).Skip(sp.Offset).Limit(sp.Limit).All(&results)
+		Find(nil).
+		Select(bson.M{"id": 1, "name" : 1, "loc" : 1}).
+		Skip(sp.Offset).Limit(sp.Limit).All(&results)
 	return results, err
 }
 
@@ -82,7 +84,9 @@ func (repo *PlacesRepo) FindPlacesByLocation(sp *models.SearchParams) (models.Pl
 				"$maxDistance": sp.Rad,
 				},
 			},
-	}).Skip(sp.Offset).Limit(sp.Limit).All(&results)
+	}).
+		Select(bson.M{"id": 1, "name" : 1, "loc" : 1}).
+		Skip(sp.Offset).Limit(sp.Limit).All(&results)
 
 	return results, err
 }
