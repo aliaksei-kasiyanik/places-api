@@ -68,6 +68,10 @@ func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p
 
 	err := pc.repo.InsertPlace(place)
 	if err != nil {
+		if mgo.IsDup(err) {
+			ErrorResponse(w, "Place with this id already exists", http.StatusBadRequest)
+			return
+		}
 		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
 		return
 	}

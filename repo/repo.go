@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/aliaksei-kasiyanik/places-api/models"
+	"log"
 )
 
 type (
@@ -14,7 +15,28 @@ type (
 )
 
 func NewPlacesRepo(s *mgo.Session) *PlacesRepo {
+	ensureIndex(s)
 	return &PlacesRepo{s}
+}
+
+func ensureIndex(s *mgo.Session) {
+	session := s.Copy()
+	defer session.Close()
+
+	c := session.DB("places-api").C("places")
+
+	index := mgo.Index{
+		Key: []string{"$2dsphere:loc"},
+		Bits: 26, // bits of precision; 26 bits is roughly equivalent to 2 feet or 60 centimeters of precision
+		Name: "GeoIndex",
+		DropDups: true,
+	}
+	log.Print("GeoIndex ensuring...")
+	err := c.EnsureIndex(index)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("GeoIndex is created.")
 }
 
 func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
