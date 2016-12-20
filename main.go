@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/urfave/negroni"
 	"gopkg.in/mgo.v2"
 
@@ -9,9 +11,12 @@ import (
 	"github.com/aliaksei-kasiyanik/places-api/utils"
 )
 
-func main() {
+const (
+	DEFAULT_CONFIG_PATH = "config.json"
+)
 
-	config := utils.NewConfiguration("config.json")
+func main() {
+	config := utils.NewConfiguration(getConfigPath())
 
 	session, err := mgo.DialWithInfo(config.GetMongoDialInfo())
 	if err != nil {
@@ -27,4 +32,12 @@ func main() {
 	n.UseHandler(router)
 
 	n.Run(config.AppAddr)
+}
+
+func getConfigPath() string {
+	if len(os.Args) == 2 {
+		return os.Args[1]
+	} else {
+		return DEFAULT_CONFIG_PATH
+	}
 }
