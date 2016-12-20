@@ -3,6 +3,7 @@ package models
 import (
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"net/http"
 )
 
 type (
@@ -54,19 +55,27 @@ func (*Places) Validate() error {
 	return nil
 }
 
-func (places Places) Wrap(self string) *PlacesWrapper {
-	var items []*PlaceWrapper
+func (places Places) Wrap(r *http.Request) *PlacesWrapper {
+	//var items []*PlaceWrapper
+	items := make([]*PlaceWrapper, 0)
 	for _, p := range places {
-		items = append(items, p.Wrap())
+		items = append(items, p.wrapPlace())
 	}
 	pw := &PlacesWrapper{
 		Items: items,
-		Meta:  &PlacesMeta{Self: self},
+		Meta:  &PlacesMeta{Self: r.RequestURI},
 	}
 	return pw
 }
 
-func (p *Place) Wrap() *PlaceWrapper {
+func (p *Place) Wrap(r *http.Request) *PlaceWrapper {
+	return &PlaceWrapper{
+		Item: p,
+		Meta: &PlaceMeta{Self: r.RequestURI},
+	}
+}
+
+func (p *Place) wrapPlace() *PlaceWrapper {
 	return &PlaceWrapper{
 		Item: p,
 		Meta: &PlaceMeta{"/places/" + p.Id.Hex()},
