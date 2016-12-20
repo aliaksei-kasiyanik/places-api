@@ -26,7 +26,7 @@ type (
 	}
 
 	PlaceWrapper struct {
-		Item *Place    `json:"item"`
+		Item *Place     `json:"item"`
 		Meta *PlaceMeta `json:"_meta"`
 	}
 
@@ -38,7 +38,7 @@ type (
 
 	PlacesWrapper struct {
 		Items []*PlaceWrapper `json:"items"`
-		Meta  *PlacesMeta      `json:"_meta"`
+		Meta  *PlacesMeta     `json:"_meta"`
 	}
 )
 
@@ -51,7 +51,7 @@ func (places Places) WrapPlaces(self string) *PlacesWrapper {
 	}
 	pw := &PlacesWrapper{
 		Items: items,
-		Meta: &PlacesMeta{Self: self},
+		Meta:  &PlacesMeta{Self: self},
 	}
 	//pw.Items = &items
 	//pw.Meta = &PlacesMeta{Self: self}

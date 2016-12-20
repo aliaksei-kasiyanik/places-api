@@ -10,7 +10,7 @@ import (
 
 type (
 	PlacesRepo struct {
-		session    *mgo.Session
+		session *mgo.Session
 	}
 )
 
@@ -26,9 +26,9 @@ func ensureIndex(s *mgo.Session) {
 	c := session.DB("places-api").C("places")
 
 	index := mgo.Index{
-		Key: []string{"$2dsphere:loc"},
-		Bits: 26, // bits of precision; 26 bits is roughly equivalent to 2 feet or 60 centimeters of precision
-		Name: "GeoIndex",
+		Key:      []string{"$2dsphere:loc"},
+		Bits:     26, // bits of precision; 26 bits is roughly equivalent to 2 feet or 60 centimeters of precision
+		Name:     "GeoIndex",
 		DropDups: true,
 	}
 	log.Print("GeoIndex ensuring...")
@@ -49,16 +49,39 @@ func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
 	return session.DB("places-api").C("places").Insert(&place)
 }
 
-func (repo *PlacesRepo) FindAllPlaces() (models.Places, error) {
+func (repo *PlacesRepo) FindAllPlaces(sp *models.SearchParams) (models.Places, error) {
 
-	var result models.Places
+	var results models.Places
 
 	session := repo.session.Copy()
 	defer session.Close()
 
-	iter := session.DB("places-api").C("places").Find(nil).Limit(100).Iter()
-	err := iter.All(&result)
-	return result, err
+	err := session.DB("places-api").C("places").
+		Find(nil).Skip(sp.Offset).Limit(sp.Limit).All(&results)
+	return results, err
+}
+
+func (repo *PlacesRepo) FindPlacesByLocation(sp *models.SearchParams) (models.Places, error) {
+
+	var results models.Places
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	err := session.DB("places-api").C("places").
+		Find(bson.M{
+		"loc": bson.M{
+			"$nearSphere": bson.M{
+				"$geometry": bson.M{
+					"type":        "Point",
+					"coordinates": []float64{sp.Lon, sp.Lat},
+				},
+				"$maxDistance": sp.Rad,
+			},
+		},
+	}).Skip(sp.Offset).Limit(sp.Limit).All(&results)
+
+	return results, err
 }
 
 func (repo *PlacesRepo) FindPlaceById(oid *bson.ObjectId) (*models.Place, error) {

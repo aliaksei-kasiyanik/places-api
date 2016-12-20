@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gopkg.in/mgo.v2"
 	"github.com/codegangsta/negroni"
+	"gopkg.in/mgo.v2"
 
 	"github.com/aliaksei-kasiyanik/places-api/repo"
 	"github.com/aliaksei-kasiyanik/places-api/web"

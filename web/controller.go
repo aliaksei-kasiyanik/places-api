@@ -25,27 +25,19 @@ func NewPlacesController(r *repo.PlacesRepo) *PlacesController {
 
 func (pc PlacesController) SearchPlaces(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
-	places, err := pc.repo.FindAllPlaces()
+	var places models.Places
 
+	searchParams, err := models.NewSearchParams(r)
 	if err != nil {
-		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
+		ErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	ResponseOK(w, places.WrapPlaces("/places"))
-}
-
-func (pc PlacesController) SearchPlacesByLocation(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-
-	//lat :=  p.ByName("latitude")
-	//lon :=  p.ByName("longitude")
-	//
-	//rad := p.ByName("radius")
-	//
-	//offset := p.ByName("offset")
-	//limit := p.ByName("limit")
-
-	places, err := pc.repo.FindAllPlaces()
+	if searchParams.IsGeo {
+		places, err = pc.repo.FindPlacesByLocation(searchParams)
+	} else {
+		places, err = pc.repo.FindAllPlaces(searchParams)
+	}
 
 	if err != nil {
 		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
