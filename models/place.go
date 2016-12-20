@@ -2,6 +2,7 @@ package models
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type (
@@ -11,12 +12,13 @@ type (
 	}
 
 	Place struct {
-		Id          bson.ObjectId `json:"-" bson:"_id"`
-		Location    GeoJson       `json:"location" bson:"loc"`
-		Name        string        `json:"name" bson:"name"`
-		Description string        `json:"description" bson:"desc,omitempty"`
-		Categories  []string      `json:"categories" bson:"cat,omitempty"`
-		Image       string        `json:"image" bson:"img,omitempty"`
+		Id               bson.ObjectId `json:"-" bson:"_id"`
+		Location         GeoJson       `json:"location" bson:"loc"`
+		Name             string        `json:"name" bson:"name"`
+		Description      string        `json:"description" bson:"desc,omitempty"`
+		Categories       []string      `json:"categories" bson:"cat,omitempty"`
+		Image            string        `json:"image" bson:"img,omitempty"`
+		LastModifiedTime time.Time     `json:"-" bson:"lastModified"`
 	}
 
 	Places []*Place

@@ -92,6 +92,37 @@ func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p
 	Response(w, place, http.StatusCreated)
 }
 
+func (pc PlacesController) UpdatePlace(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	id := p.ByName("id")
+	if !bson.IsObjectIdHex(id) {
+		ErrorResponse(w, "id is corrupted", http.StatusBadRequest)
+		return
+	}
+
+	place := &models.Place{}
+	if err := json.NewDecoder(r.Body).Decode(place); err != nil {
+		ErrorResponse(w, "Place entity is corrupted", http.StatusBadRequest)
+		return
+	}
+
+	place.Id = bson.ObjectIdHex(id)
+
+	if err := pc.repo.UpdatePlace(place); err != nil {
+
+		switch err {
+		default:
+			ErrorResponse(w, "Database error", http.StatusInternalServerError)
+			return
+		case mgo.ErrNotFound:
+			ErrorResponse(w, "Place not found", http.StatusNotFound)
+			return
+		}
+
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (pc PlacesController) RemovePlace(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	id := p.ByName("id")

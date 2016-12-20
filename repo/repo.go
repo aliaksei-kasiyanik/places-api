@@ -6,6 +6,7 @@ import (
 
 	"github.com/aliaksei-kasiyanik/places-api/models"
 	"log"
+	"time"
 )
 
 type (
@@ -42,6 +43,8 @@ func ensureIndex(s *mgo.Session) {
 func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
 
 	place.Id = bson.NewObjectId()
+
+	place.LastModifiedTime = time.Now()
 
 	session := repo.session.Copy()
 	defer session.Close()
@@ -101,6 +104,17 @@ func (repo *PlacesRepo) RemovePlace(oid *bson.ObjectId) error {
 	defer session.Close()
 
 	return session.DB("places-api").C("places").RemoveId(oid)
+}
+
+func (repo *PlacesRepo) UpdatePlace(place *models.Place) error {
+
+	session := repo.session.Copy()
+	defer session.Close()
+
+	place.LastModifiedTime = time.Now()
+
+	_, err := session.DB("places-api").C("places").UpsertId(place.Id, bson.M{"$set": place})
+	return err
 }
 
 func (repo *PlacesRepo) PlaceExist(oid *bson.ObjectId) error {

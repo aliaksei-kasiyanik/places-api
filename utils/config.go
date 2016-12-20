@@ -2,18 +2,18 @@ package utils
 
 import (
 	"encoding/json"
-	"os"
 	"gopkg.in/mgo.v2"
+	"os"
 	"time"
 )
 
 type MongoConfiguration struct {
 	Addrs   []string `json:"addrs"`
-	Timeout int64 `json:"timeout"` // in sec
+	Timeout int64    `json:"timeout"` // in sec
 }
 
 type Configuration struct {
-	AppAddr     string      `json:"appAddr"`
+	AppAddr     string              `json:"appAddr"`
 	MongoConfig *MongoConfiguration `json:"mongo"`
 }
 
@@ -32,7 +32,7 @@ func NewConfiguration(configPath string) *Configuration {
 
 func (c *Configuration) GetMongoDialInfo() *mgo.DialInfo {
 	return &mgo.DialInfo{
-		Addrs: c.MongoConfig.Addrs,
+		Addrs:   c.MongoConfig.Addrs,
 		Timeout: time.Duration(c.MongoConfig.Timeout) * time.Second,
 	}
 }

@@ -2,8 +2,8 @@ package web
 
 import (
 	"log"
-	"os"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/urfave/negroni"
