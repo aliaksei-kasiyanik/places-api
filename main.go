@@ -1,10 +1,8 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"gopkg.in/mgo.v2"
+	"github.com/codegangsta/negroni"
 
 	"github.com/aliaksei-kasiyanik/places-api/repo"
 	"github.com/aliaksei-kasiyanik/places-api/web"
@@ -21,5 +19,8 @@ func main() {
 	placesRepo := repo.NewPlacesRepo(mongoSession)
 
 	router := web.PlaceApiRouter(placesRepo)
-	log.Fatal(http.ListenAndServe(":8080", router))
+
+	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
+	n.UseHandler(router)
+	n.Run(":8080")
 }

@@ -35,6 +35,26 @@ func (pc PlacesController) SearchPlaces(w http.ResponseWriter, r *http.Request, 
 	ResponseOK(w, places.WrapPlaces("/places"))
 }
 
+func (pc PlacesController) SearchPlacesByLocation(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	//lat :=  p.ByName("latitude")
+	//lon :=  p.ByName("longitude")
+	//
+	//rad := p.ByName("radius")
+	//
+	//offset := p.ByName("offset")
+	//limit := p.ByName("limit")
+
+	places, err := pc.repo.FindAllPlaces()
+
+	if err != nil {
+		ErrorResponse(w, "Database Error", http.StatusInternalServerError)
+		return
+	}
+
+	ResponseOK(w, places.WrapPlaces("/places"))
+}
+
 func (pc PlacesController) GetPlaceById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	id := p.ByName("id")
