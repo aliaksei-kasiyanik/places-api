@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/codegangsta/negroni"
+	"github.com/urfave/negroni"
 	"gopkg.in/mgo.v2"
 
 	"github.com/aliaksei-kasiyanik/places-api/repo"
@@ -23,7 +23,7 @@ func main() {
 	placesRepo := repo.NewPlacesRepo(session)
 	router := web.PlaceApiRouter(placesRepo)
 
-	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
+	n := negroni.New(negroni.NewRecovery(), web.NewLogger())
 	n.UseHandler(router)
 
 	n.Run(config.AppAddr)
