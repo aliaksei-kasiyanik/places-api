@@ -77,8 +77,8 @@ func (repo *PlacesRepo) FindPlacesByLocation(sp *models.SearchParams) (models.Pl
 					"coordinates": []float64{sp.Lon, sp.Lat},
 				},
 				"$maxDistance": sp.Rad,
+				},
 			},
-		},
 	}).Skip(sp.Offset).Limit(sp.Limit).All(&results)
 
 	return results, err

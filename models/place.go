@@ -42,10 +42,20 @@ type (
 	}
 )
 
-func (places Places) WrapPlaces(self string) *PlacesWrapper {
+func (*Place) Validate() error {
+	//TODO
+	return nil
+}
+
+func (*Places) Validate() error {
+	//TODO
+	return nil
+}
+
+func (places Places) Wrap(self string) *PlacesWrapper {
 	var items []*PlaceWrapper
 	for _, p := range places {
-		items = append(items, p.WrapPlace())
+		items = append(items, p.Wrap())
 	}
 	pw := &PlacesWrapper{
 		Items: items,
@@ -54,7 +64,7 @@ func (places Places) WrapPlaces(self string) *PlacesWrapper {
 	return pw
 }
 
-func (p *Place) WrapPlace() *PlaceWrapper {
+func (p *Place) Wrap() *PlaceWrapper {
 	return &PlaceWrapper{
 		Item: p,
 		Meta: &PlaceMeta{"/places/" + p.Id.Hex()},

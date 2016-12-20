@@ -44,7 +44,7 @@ func (pc PlacesController) SearchPlaces(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	ResponseOK(w, places.WrapPlaces("/places"))
+	ResponseOK(w, places.Wrap("/places"))
 }
 
 func (pc PlacesController) GetPlaceById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -68,7 +68,7 @@ func (pc PlacesController) GetPlaceById(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
-	ResponseOK(w, place.WrapPlace())
+	ResponseOK(w, place.Wrap())
 }
 
 func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -76,6 +76,7 @@ func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p
 	place := &models.Place{}
 	if err := json.NewDecoder(r.Body).Decode(place); err != nil {
 		ErrorResponse(w, "Place entity is corrupted", http.StatusBadRequest)
+		return
 	}
 
 	err := pc.repo.InsertPlace(place)

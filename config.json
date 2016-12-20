@@ -1,0 +1,9 @@
+{
+  "mongo": {
+    "addrs": [
+      "localhost:27017"
+    ],
+    "timeout": 1
+  },
+  "appAddr": ":8080"
+}

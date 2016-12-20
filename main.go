@@ -6,21 +6,25 @@ import (
 
 	"github.com/aliaksei-kasiyanik/places-api/repo"
 	"github.com/aliaksei-kasiyanik/places-api/web"
+	"github.com/aliaksei-kasiyanik/places-api/utils"
 )
 
 func main() {
-	mongoSession, err := mgo.Dial("mongodb://localhost")
+
+	config := utils.NewConfiguration("config.json")
+
+	session, err := mgo.DialWithInfo(config.GetMongoDialInfo())
 	if err != nil {
 		panic(err)
 	}
-	defer mongoSession.Close()
-	//session.SetMode(mgo.Monotonic, true)
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
 
-	placesRepo := repo.NewPlacesRepo(mongoSession)
-
+	placesRepo := repo.NewPlacesRepo(session)
 	router := web.PlaceApiRouter(placesRepo)
 
 	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
 	n.UseHandler(router)
-	n.Run(":8080")
+
+	n.Run(config.AppAddr)
 }
