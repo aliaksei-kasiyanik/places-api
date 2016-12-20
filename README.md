@@ -17,6 +17,14 @@ https://awesome-go.com/
 
 #### Web
 
+http://golang-book.ru/
+
+http://www.golang-book.com/public/pdf/gobook.0.pdf
+
+http://openmymind.net/assets/go/go.pdf
+
+https://www.gitbook.com/book/astaxie/build-web-application-with-golang/details
+
 **Http implementation**
 
 1. Non-default http implementation for Go. It is up to 10x faster than net/http.
