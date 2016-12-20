@@ -27,9 +27,10 @@ func ensureIndex(s *mgo.Session) {
 	c := session.DB("places-api").C("places")
 
 	index := mgo.Index{
-		Key:      []string{"$2dsphere:loc"},
+		Key:      []string{"$2dsphere:loc", "name", "_id"},
 		Bits:     26, // bits of precision; 26 bits is roughly equivalent to 2 feet or 60 centimeters of precision
 		Name:     "GeoIndex",
+		Unique:   true,
 		DropDups: true,
 	}
 	log.Print("GeoIndex ensuring...")
