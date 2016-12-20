@@ -53,7 +53,7 @@ func NewSearchParams(r *http.Request) (*SearchParams, error) {
 	latParam := queryParams.Get("lat")
 	radParam := queryParams.Get("rad")
 
-	if len(lonParam) != 0 && len(latParam) != 0 {
+	if len(lonParam) != 0 || len(latParam) != 0 {
 		sp.IsGeo = true
 		if len(lonParam) == 0 {
 			return sp, errors.New("lon is missed")
