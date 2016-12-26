@@ -56,14 +56,14 @@ type (
 	}
 )
 
-func (*Place) Validate() error {
-	//TODO
-	return nil
-}
-
-func (*Places) Validate() error {
-	//TODO
-	return nil
+func (p *Place) Validate() string {
+	if p.Name == "" {
+		return "Name is not provided."
+	}
+	if p.Location.Coordinates == nil || len(p.Location.Coordinates) != 2 || p.Location.Type != "Point" {
+		return "Location is corrupted."
+	}
+	return ""
 }
 
 func (places Places) Wrap(r *http.Request, searchParams *SearchParams, resultCount int) *PlacesWrapper {

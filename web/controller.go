@@ -79,6 +79,11 @@ func (pc PlacesController) CreatePlace(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
+	if err := place.Validate(); err != "" {
+		ErrorResponse(w, err, http.StatusBadRequest)
+		return
+	}
+
 	err := pc.repo.InsertPlace(place)
 	if err != nil {
 		if mgo.IsDup(err) {
