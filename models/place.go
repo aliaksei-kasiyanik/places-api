@@ -25,6 +25,7 @@ type (
 		Description      string        `json:"description" bson:"desc,omitempty"`
 		Categories       []string      `json:"categories" bson:"cat,omitempty"`
 		Image            string        `json:"image" bson:"img,omitempty"`
+		FoursquareId     string        `json:"fsId" bson:"fsId,omitempty"`
 		LastModifiedTime time.Time     `json:"-" bson:"lastModified"`
 	}
 

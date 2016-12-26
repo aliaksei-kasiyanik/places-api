@@ -16,11 +16,13 @@ type (
 )
 
 func NewPlacesRepo(s *mgo.Session) *PlacesRepo {
-	ensureIndex(s)
+	ensureGeoIndex(s)
+	//mgo doesn't support partial indexes
+	//ensureFoursquareIdIndex(s)
 	return &PlacesRepo{s}
 }
 
-func ensureIndex(s *mgo.Session) {
+func ensureGeoIndex(s *mgo.Session) {
 	session := s.Copy()
 	defer session.Close()
 
@@ -40,6 +42,28 @@ func ensureIndex(s *mgo.Session) {
 	}
 	log.Print("GeoIndex is created.")
 }
+
+func ensureFoursquareIdIndex(s *mgo.Session) {
+	session := s.Copy()
+	defer session.Close()
+
+	c := session.DB("places-api").C("places")
+
+	index := mgo.Index{
+		Key: []string{"fsId"},
+		Name: "FsIndex",
+		Unique: true,
+		DropDups: true,
+	}
+
+	log.Print("FoursquareIdIndex ensuring...")
+	err := c.EnsureIndex(index)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("FoursquareIdIndex is created.")
+}
+
 
 func (repo *PlacesRepo) InsertPlace(place *models.Place) error {
 
