@@ -44,7 +44,7 @@ func (pc PlacesController) SearchPlaces(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	ResponseOK(w, places.Wrap(r))
+	ResponseOK(w, places.Wrap(r, searchParams, len(places)))
 }
 
 func (pc PlacesController) GetPlaceById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

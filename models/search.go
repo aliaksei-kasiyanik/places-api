@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"fmt"
 )
 
 const (
@@ -84,4 +85,46 @@ func NewSearchParams(r *http.Request) (*SearchParams, error) {
 	}
 
 	return sp, nil
+}
+
+func (p *SearchParams) getPrev() string {
+	if p.Offset == 0 {
+		return ""
+	}
+	newOffset := p.Offset - p.Limit
+	if newOffset < 0 {
+		newOffset = 0
+	}
+	if p.IsGeo {
+		return fmt.Sprintf("?lon=%g&lat=%g&rad=%g&limit=%d&offset=%d",
+			p.Lon,
+			p.Lat,
+			p.Rad,
+			p.Limit,
+			newOffset,
+		)
+	} else {
+		return fmt.Sprintf("?limit=%d&offset=%d",
+			p.Limit,
+			newOffset,
+		)
+	}
+}
+
+func (p *SearchParams) getNext() string {
+	newOffset := p.Offset + p.Limit
+	if p.IsGeo {
+		return fmt.Sprintf("?lon=%g&lat=%g&rad=%g&limit=%d&offset=%d",
+			p.Lon,
+			p.Lat,
+			p.Rad,
+			p.Limit,
+			newOffset,
+		)
+	} else {
+		return fmt.Sprintf("?limit=%d&offset=%d",
+			p.Limit,
+			newOffset,
+		)
+	}
 }

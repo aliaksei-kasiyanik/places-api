@@ -66,15 +66,14 @@ func (*Places) Validate() error {
 	return nil
 }
 
-func (places Places) Wrap(r *http.Request) *PlacesWrapper {
-	//var items []*PlaceWrapper
+func (places Places) Wrap(r *http.Request, searchParams *SearchParams, resultCount int) *PlacesWrapper {
 	items := make([]*BasePlaceWrapper, 0)
 	for _, p := range places {
 		items = append(items, p.wrapPlace())
 	}
 	pw := &PlacesWrapper{
 		Items: items,
-		Meta:  &PlacesMeta{Self: r.RequestURI},
+		Meta: createMeta(r, searchParams, resultCount),
 	}
 	return pw
 }
@@ -91,4 +90,19 @@ func (p *BasePlace) wrapPlace() *BasePlaceWrapper {
 		Item: p,
 		Meta: &PlaceMeta{"/places/" + p.Id.Hex()},
 	}
+}
+
+func createMeta(r *http.Request, searchParams *SearchParams, resultCount int) *PlacesMeta {
+	prev := ""
+	prevParams := searchParams.getPrev()
+	if prevParams != "" {
+		prev = r.URL.Path + prevParams
+	}
+	next := ""
+	if resultCount == searchParams.Limit {
+		nextParams := searchParams.getNext()
+		next = r.URL.Path + nextParams
+	}
+	meta := &PlacesMeta{Self: r.RequestURI, Next: next, Prev: prev}
+	return meta
 }
