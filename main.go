@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/urfave/negroni"
+	//"github.com/urfave/negroni"
 	"gopkg.in/mgo.v2"
 
 	"github.com/aliaksei-kasiyanik/places-api/repo"
