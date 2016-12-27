@@ -22,10 +22,10 @@ type (
 		Id               bson.ObjectId `json:"-" bson:"_id"`
 		Location         GeoJson       `json:"location" bson:"loc"`
 		Name             string        `json:"name" bson:"name"`
-		Description      string        `json:"description" bson:"desc,omitempty"`
+		Description      string        `json:"description,omitempty" bson:"desc,omitempty"`
 		Categories       []string      `json:"categories" bson:"cat,omitempty"`
-		Image            string        `json:"image" bson:"img,omitempty"`
-		FoursquareId     string        `json:"fsId" bson:"fsId,omitempty"`
+		Image            string        `json:"image,omitempty" bson:"img,omitempty"`
+		FoursquareId     string        `json:"-" bson:"fsId,omitempty"`
 		LastModifiedTime time.Time     `json:"-" bson:"lastModified"`
 	}
 

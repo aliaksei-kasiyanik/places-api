@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	RADIUS = 500 // search in meters
-	LIMIT = 100
+	RADIUS = 1000 // search in meters
+	LIMIT = 20
 	OFFSET = 0
 )
 
@@ -37,6 +37,9 @@ func NewSearchParams(r *http.Request) (*SearchParams, error) {
 		limit, err := strconv.Atoi(limitParam)
 		if err != nil || limit < 0 {
 			return sp, errors.New("limit is incorrect")
+		}
+		if limit > 100 {
+			return sp, errors.New("Max limit is exceeded")
 		}
 		sp.Limit = limit
 	}
@@ -76,6 +79,8 @@ func NewSearchParams(r *http.Request) (*SearchParams, error) {
 		if len(radParam) != 0 {
 			if rad, err := strconv.ParseFloat(latParam, 64); err != nil || rad < 0 {
 				return sp, errors.New("rad is incorrect")
+			} else if rad > 10000 {
+				return sp, errors.New("Max radius is exceeded")
 			} else {
 				sp.Rad = rad
 			}
