@@ -9,6 +9,8 @@ import (
 	"github.com/aliaksei-kasiyanik/places-api/repo"
 	"github.com/aliaksei-kasiyanik/places-api/utils"
 	"github.com/aliaksei-kasiyanik/places-api/web"
+	"net/http"
+	"log"
 )
 
 const (
@@ -23,15 +25,17 @@ func main() {
 		panic(err)
 	}
 	defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
+	//session.SetMode(mgo.Monotonic, true)
 
 	placesRepo := repo.NewPlacesRepo(session)
 	router := web.PlaceApiRouter(placesRepo)
 
-	n := negroni.New(negroni.NewRecovery(), web.NewLogger())
-	n.UseHandler(router)
+	//n := negroni.New(negroni.NewRecovery(), web.NewLogger())
+	//n.UseHandler(router)
 
-	n.Run(config.AppAddr)
+	//n.Run(config.AppAddr)
+
+	log.Fatal(http.ListenAndServe(config.AppAddr, router))
 }
 
 func getConfigPath() string {
